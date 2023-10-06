@@ -35,6 +35,7 @@ initializeDbAndServer();
 app.post("/api/auth/signup", async(request,response) => {
 
     const {firstName, lastName, mobileNumber, email, password} = request.body;
+    // console.log(mobileNumber) 
 
     const userRegQuery = `
         INSERT INTO users(
@@ -53,6 +54,7 @@ app.post("/api/auth/signup", async(request,response) => {
 
     try{
         const isEmailRegistered = await db.get(userCheckQuery, [email])
+        console.log(isEmailRegistered)
         if (isEmailRegistered !== undefined) {
             await response.status(400).json({
                 status : 400,
@@ -77,9 +79,10 @@ app.post("/api/auth/signup", async(request,response) => {
 
 
 // 2. Api call for user Authentication 
-app.get("/api/auth/login", async(request,response) => {
+app.post("/api/auth/login", async(request,response) => {
 
     const {userEmail, userPassword} = request.body;
+    // console.log(userEmail , userPassword);
 
     const getUserDetailQuery = `
         SELECT *
@@ -89,12 +92,13 @@ app.get("/api/auth/login", async(request,response) => {
 
     
     try{
-        const userData = await db.get(getUserDetailQuery, [email])
+        const userData = await db.get(getUserDetailQuery, [userEmail])
+        // console.log(userData)
 
         if(userData === undefined){
-            await response.status(404).json({
+            await response.status(400).json({
                 status : 400,
-                message : "Email already Registered Please Login"
+                message : "Email is not Registered. Please Signup First"
             })
         }
         else {
@@ -139,10 +143,18 @@ app.get("/profile/:id", async(request,response) => {
     try {
         const userDetails = await db.get(getUserDetails, [id]);
 
-        await response.status(200).json({
-            status :200,
-            userDetails
-        })
+        if (userDetails === undefined){
+            await response.status(400).json({
+                status : 400,
+                message : "userId not Present"
+            })
+        }
+        else{
+            await response.status(200).json({
+                status :200,
+                userDetails
+            })
+        }
     }
     catch(e){
         await response.status(500).json({

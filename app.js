@@ -47,7 +47,7 @@ app.post("/api/auth/signup", async(request,response) => {
     `;
 
     const userCheckQuery = `
-            SELECT * 
+            SELECT userId, firstName, lastName, mobileNumber, email 
             FROM users
             WHERE email = ?;
     `;
@@ -85,7 +85,7 @@ app.post("/api/auth/login", async(request,response) => {
     // console.log(userEmail , userPassword);
 
     const getUserDetailQuery = `
-        SELECT *
+        SELECT userId, firstName, lastName, mobileNumber, email
         FROM users 
         WHERE email = ?;
     `;
@@ -135,7 +135,7 @@ app.get("/profile/:id", async(request,response) => {
     const {id} = request.params 
 
     const getUserDetails = `
-        SELECT * 
+        SELECT userId, firstName, lastName, mobileNumber, email
         FROM users 
         WHERE userId = ?;
     `;
